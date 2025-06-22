@@ -12,7 +12,7 @@ public abstract class EzirizReaderBase : ContextBase
     /// <summary>
     ///     The binary stream reader used to read data.
     /// </summary>
-    protected BinaryStreamReader Reader;
+    public BinaryStreamReader Reader;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="EzirizReaderBase" /> class.

@@ -47,3 +47,46 @@ internal record LdelemRef : IOpCodePattern
 }
 
 #endregion
+
+#region Stelem_Ref
+
+internal record StelemRef : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Call,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldnull,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Castclass,
+        CilOpCodes.Dup,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldflda,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret,
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Stelem_Ref;
+
+    public bool Verify(EzirizHandler handler) => true;
+}
+
+#endregion

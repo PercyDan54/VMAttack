@@ -3,7 +3,7 @@ using System.Linq;
 using AsmResolver.DotNet;
 using AsmResolver.PE.DotNet.Cil;
 using Echo.ControlFlow;
-using Echo.Core.Graphing.Analysis.Traversal;
+using Echo.Graphing.Analysis.Traversal;
 using Echo.Platforms.AsmResolver;
 using VMAttack.Core;
 using VMAttack.Core.Abstraction;
@@ -57,7 +57,7 @@ public class HandlerMapper : ContextBase
             for (int opcode = 0; opcode < cases!.Count; opcode++)
             {
                 // Gets the target node of the current opcode.
-                var handler = cfg.GetNodeByOffset(cases[opcode].Offset);
+                var handler = cfg.Nodes.GetByOffset(cases[opcode].Offset);
 
                 // Traverses the control flow graph and records the traversal order.
                 var traversal = new DepthFirstTraversal();

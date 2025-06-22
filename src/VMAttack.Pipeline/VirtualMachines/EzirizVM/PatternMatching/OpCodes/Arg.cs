@@ -14,21 +14,23 @@ internal record Ldarg : IOpCodePattern
 {
     public IList<CilOpCode> Pattern => new List<CilOpCode>
     {
-        CilOpCodes.Ldarg_0,    // 0 - ldarg.0
-        CilOpCodes.Ldfld,      // 1 - ldfld	class Eziriz.VM/VMStack Eziriz.VM/VMMethodExecutor::Stack
-        CilOpCodes.Ldarg_0,    // 2 - ldarg.0
-        CilOpCodes.Ldfld,      // 3 - ldfld	object Eziriz.VM/VMMethodExecutor::Operand
-        CilOpCodes.Ldarg_0,    // 4 - ldarg.0
-        CilOpCodes.Ldfld,      // 5 - ldfld	class Eziriz.VM/VMStack Eziriz.VM/VMMethodExecutor::Stack
-        CilOpCodes.Unbox_Any,  // 6 - unbox.any	[mscorlib]System.Int32
-        CilOpCodes.Ldelem_Ref, // 7 - ldelem.ref     
-        CilOpCodes.Callvirt,   // 8 - callvirt	instance Void Eziriz.VM/VMStack::AddVMLocal(class Eziriz.VM/VMObject)
-        CilOpCodes.Ret         // 9 - ret
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Unbox_Any,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Ldelem_Ref,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Ldarg;
 
-    public bool Verify(EzirizHandler handler) => handler.Instructions[6].Operand is ITypeDefOrRef { FullName: "System.Int32" };
+    public bool Verify(EzirizHandler handler) => handler.Instructions[2].Operand is ITypeDefOrRef { FullName: "System.Int32" };
 }
 
 #endregion

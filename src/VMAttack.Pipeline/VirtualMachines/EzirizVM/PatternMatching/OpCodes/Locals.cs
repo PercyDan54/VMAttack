@@ -55,23 +55,25 @@ internal record Ldloc : IOpCodePattern
 {
     public IList<CilOpCode> Pattern => new List<CilOpCode>
     {
-        CilOpCodes.Ldarg_0,    // 0 - ldarg.0
-        CilOpCodes.Ldfld,      // 1 - ldfld	class Eziriz.VM/VMObject[] Eziriz.VM/VMMethodExecutor::VMVariables
-        CilOpCodes.Ldarg_0,    // 2 - ldarg.0
-        CilOpCodes.Ldfld,      // 3 - ldfld	object Eziriz.VM/VMMethodExecutor::Operand
-        CilOpCodes.Unbox_Any,  // 4 - unbox.any	[mscorlib]System.Int32
-        CilOpCodes.Ldelem_Ref, // 5 - ldelem.ref
-        CilOpCodes.Stloc_S,    // 6 - stloc.s	V_17 (17)
-        CilOpCodes.Ldarg_0,    // 7 - ldarg.0
-        CilOpCodes.Ldfld,      // 8 - ldfld	class Eziriz.VM/VMStack Eziriz.VM/VMMethodExecutor::Stack
-        CilOpCodes.Ldloc_S,    // 9 - ldloc.s	V_17 (17)
-        CilOpCodes.Callvirt,   // 10 - callvirt	instance Void Eziriz.VM/VMStack::AddVMLocal(class Eziriz.VM/VMObject)
-        CilOpCodes.Ret         // 11 - ret
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Unbox_Any,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Ldelem_Ref,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Ldloc;
 
-    public bool Verify(EzirizHandler handler) => handler.Instructions[4].Operand is ITypeDefOrRef { FullName: "System.Int32" };
+    public bool Verify(EzirizHandler handler) => handler.Instructions[2].Operand is ITypeDefOrRef { FullName: "System.Int32" };
 }
 
 #endregion
@@ -89,7 +91,7 @@ internal record Ldloca : IOpCodePattern
         CilOpCodes.Unbox_Any, // 4 - unbox.any	[mscorlib]System.Int32
         CilOpCodes.Ldarg_0,   // 5 - ldarg.0
         CilOpCodes.Newobj,    // 6 - newobj	instance void Eziriz.VM/Class27::.ctor(int32, class Eziriz.VM/VMMethodExecutor)
-        CilOpCodes.Callvirt,  // 7 - callvirt	instance void Eziriz.VM/VMStack::PushValue(class Eziriz.VM/VMObject)
+        CilOpCodes.Callvirt,           // 7 - callvirt	instance void Eziriz.VM/VMStack::PushValue(class Eziriz.VM/VMObject)
         CilOpCodes.Ret        // 8 - ret
     };
 

@@ -165,6 +165,9 @@ public class EzirizMethodReader : EzirizReaderBase
         for (int i = 0; i < count; i++)
             exceptions.Add(reader.ReadEh());
 
+        // HACK: Reader gets copied instead of referenced
+        Reader.Offset = reader.Reader.Offset;
+
         if (exceptions.Count > 0)
         {
             Logger.Debug("Sorting exception handlers...");

@@ -65,6 +65,7 @@ internal record Ret : IOpCodePattern
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Ret;
+    public bool AllowMultiple => true;
     public bool Verify(EzirizOpcode opcode) => true;
 }
 
@@ -346,6 +347,46 @@ internal record Throw : IOpCodePattern
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Throw;
+    public bool AllowMultiple => true;
+    public bool Verify(EzirizOpcode opcode) => true;
+}
+
+#endregion
+
+#region Endfinally
+
+internal record Endfinally : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldc_I4_1,
+        CilOpCodes.Stfld,
+        CilOpCodes.Ret
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Endfinally;
+    public bool Verify(EzirizOpcode opcode) => true;
+}
+
+#endregion
+
+#region Dup
+
+internal record Dup : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret,
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Dup;
     public bool Verify(EzirizOpcode opcode) => true;
 }
 

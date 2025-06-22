@@ -99,6 +99,32 @@ public class CilMethodBodyGenerator : ContextBase
         foreach (var instruction in cilMethodBody.Instructions)
             ValidateInstruction(instruction, cilMethodBody);
 
+        if (vmMethodBody.ExceptionHandlers.Count > 0)
+        {
+            foreach (var eh in vmMethodBody.ExceptionHandlers)
+            {
+                var cilHandler = new CilExceptionHandler
+                {
+                    TryStart = cilMethodBody.Instructions[eh.TryStart].CreateLabel(),
+                    TryEnd = cilMethodBody.Instructions[eh.TryEnd + 1].CreateLabel(),
+                    HandlerStart = cilMethodBody.Instructions[eh.HandlerStart].CreateLabel(),
+                    HandlerEnd = cilMethodBody.Instructions[eh.HandlerEnd + 1].CreateLabel()
+                };
+
+                switch (eh.EhType)
+                {
+                    case EzirizEhType.Catch:
+                        cilHandler.ExceptionType = eh.CatchType.ToTypeDefOrRef();
+                        break;
+                    case EzirizEhType.Filter:
+                        cilHandler.FilterStart = cilMethodBody.Instructions[eh.Filter].CreateLabel();
+                        break;
+                }
+
+                cilMethodBody.ExceptionHandlers.Add(cilHandler);
+            }
+        }
+
         cilMethodBody.Instructions.CalculateOffsets();
         cilMethodBody.Instructions.OptimizeMacros();
 

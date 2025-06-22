@@ -48,6 +48,10 @@ public class OpCodeMapper : ContextBase
                 vmOpCode.IsIdentified = true;
                 vmOpCode.CilOpCode = opCodePat.CilOpCode;
             }
+            else
+            {
+                Logger.Debug($"No handler matched for opcode {vmCode}");
+            }
         }
         else
             Logger.Debug($"No handler found for opcode {vmCode}");
