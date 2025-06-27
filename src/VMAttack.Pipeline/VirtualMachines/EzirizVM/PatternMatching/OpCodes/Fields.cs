@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AsmResolver.PE.DotNet.Cil;
 using VMAttack.Pipeline.VirtualMachines.EzirizVM.Architecture;
 using VMAttack.Pipeline.VirtualMachines.EzirizVM.Interfaces;
@@ -114,6 +114,78 @@ internal record Stfld : IOpCodePattern
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Stfld;
+
+    public bool Verify(EzirizHandler handler) => true;
+}
+
+#endregion
+
+#region Ldsfld
+
+internal record Ldsfld : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Unbox_Any,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldtoken,
+        CilOpCodes.Call,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Ldnull,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Call,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Ldsfld;
+
+    public bool Verify(EzirizHandler handler) => true;
+}
+
+#endregion
+
+#region Stsfld
+
+internal record Stsfld : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Unbox_Any,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldtoken,
+        CilOpCodes.Call,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Ldnull,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Stsfld;
 
     public bool Verify(EzirizHandler handler) => true;
 }

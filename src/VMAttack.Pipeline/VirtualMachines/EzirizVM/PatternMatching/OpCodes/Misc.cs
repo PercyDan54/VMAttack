@@ -65,7 +65,6 @@ internal record Ret : IOpCodePattern
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Ret;
-    public bool AllowMultiple => true;
     public bool Verify(EzirizOpcode opcode) => true;
 }
 
@@ -148,6 +147,7 @@ internal record Nop : IOpCodePattern
     };
 
     public CilOpCode CilOpCode => CilOpCodes.Nop;
+    public bool AllowMultiple => true;
     public bool Verify(EzirizOpcode opcode) => true;
 }
 

@@ -16,6 +16,28 @@ public static class PatternHelpers
         if (virtualMethod.Module is null)
             return false;
 
+        var overwrites = virtualMethod.GetOverwrites();
+
+        return overwrites.Count(vMethod => PatternMatcher.GetAllMatchingInstructions(pattern, vMethod.CilMethodBody.Instructions).Count == 1) > 0;
+    }
+
+    public static List<MethodDefinition> GetPatternInOverrides(this SerializedMethodDefinition? virtualMethod, IPattern pattern)
+    {
+        var overwrites = new List<MethodDefinition>();
+
+        if (virtualMethod is not { IsVirtual: true, IsAbstract: true })
+            return overwrites;
+
+        if (virtualMethod.Module is null)
+            return overwrites;
+
+        overwrites.AddRange(GetOverwrites(virtualMethod).Where(vMethod => PatternMatcher.GetAllMatchingInstructions(pattern, vMethod.CilMethodBody.Instructions).Count == 1));
+
+        return overwrites;
+    }
+
+    public static List<MethodDefinition> GetOverwrites(this SerializedMethodDefinition? virtualMethod)
+    {
         var overwrites = new List<MethodDefinition>();
 
         foreach (var t in virtualMethod.Module.GetAllTypes())
@@ -24,10 +46,9 @@ public static class PatternHelpers
             if (vMethod.CilMethodBody is null)
                 continue;
 
-            if (PatternMatcher.GetAllMatchingInstructions(pattern, vMethod.CilMethodBody.Instructions).Count == 1)
-                overwrites.Add(vMethod);
+            overwrites.Add(vMethod);
         }
 
-        return overwrites.Count > 0;
+        return overwrites;
     }
 }

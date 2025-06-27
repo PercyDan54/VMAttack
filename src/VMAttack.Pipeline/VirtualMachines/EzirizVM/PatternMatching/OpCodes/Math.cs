@@ -1483,3 +1483,238 @@ internal record Ceq : IOpCodePattern
 }
 
 #endregion
+
+#region Not
+
+internal record NotVmTypePattern : IPattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,   // 1 - ldarg.0
+        CilOpCodes.Ldflda,    // 2 - ldflda valuetype Eziriz.VM/hSn0ucLlLMaeFvn5InR Eziriz.VM/VMIntegerType::d37Bh8uTDv
+        CilOpCodes.Ldfld,     // 3 - ldfld int32 Eziriz.VM/hSn0ucLlLMaeFvn5InR::GLgBtRhyOg
+        CilOpCodes.Not,        // 4 - Not
+        CilOpCodes.Newobj,    // 5 - newobj instance Void Eziriz.VM/VMIntegerType::.ctor(int32)
+        CilOpCodes.Ret        // 6 - ret
+    };
+
+    public bool MatchEntireBody => false;
+}
+
+internal record Not : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Call,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Brfalse_S,
+        CilOpCodes.Newobj,
+        CilOpCodes.Throw,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Not;
+
+    public bool Verify(EzirizHandler handler)
+    {
+        var virtualMethod = handler.Instructions[^3].Operand as SerializedMethodDefinition;
+        return virtualMethod.FindPatternInOverrides(new NotVmTypePattern());
+    }
+}
+
+#endregion
+
+#region Neg
+
+internal record NegVmTypePattern : IPattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0, // 1 - ldarg.0
+        CilOpCodes.Ldflda,  // 2 - ldflda valuetype Eziriz.VM/hSn0ucLlLMaeFvn5InR Eziriz.VM/VMIntegerType::d37Bh8uTDv
+        CilOpCodes.Ldfld,   // 3 - ldfld int32 Eziriz.VM/hSn0ucLlLMaeFvn5InR::GLgBtRhyOg
+        CilOpCodes.Neg,     // 4 - Not
+        CilOpCodes.Newobj,  // 5 - newobj instance Void Eziriz.VM/VMIntegerType::.ctor(int32)
+        CilOpCodes.Ret      // 6 - ret
+    };
+
+    public bool MatchEntireBody => false;
+}
+
+internal record Neg : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Castclass,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
+    };
+
+    public CilOpCode CilOpCode => CilOpCodes.Neg;
+
+    public bool Verify(EzirizHandler handler)
+    {
+        var virtualMethod = handler.Instructions[^3].Operand as SerializedMethodDefinition;
+        return virtualMethod.FindPatternInOverrides(new NegVmTypePattern());
+    }
+}
+
+#endregion
+
+#region Conv
+
+internal record ConvVmTypePattern : IPattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldflda,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldc_I4_5,
+        CilOpCodes.Newobj,
+        CilOpCodes.Ret
+    };
+
+    public bool MatchEntireBody => true;
+
+    public bool InterchangeLdcI4OpCodes => true;
+}
+
+internal record Conv : IOpCodePattern
+{
+    public IList<CilOpCode> Pattern => new List<CilOpCode>
+    {
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Call,
+        CilOpCodes.Stloc_S,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Brfalse_S,
+        CilOpCodes.Newobj,
+        CilOpCodes.Throw,
+        CilOpCodes.Ldarg_0,
+        CilOpCodes.Ldfld,
+        CilOpCodes.Ldloc_S,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Callvirt,
+        CilOpCodes.Ret
+    };
+
+    public CilOpCode CilOpCode { get; private set; } = CilOpCodes.Conv_I4;
+
+    public bool AllowMultiple => true;
+
+    public bool Verify(EzirizHandler handler)
+    {
+        var virtualMethod = handler.Instructions[^3].Operand as SerializedMethodDefinition;
+        var overwrites = virtualMethod.GetOverwrites();
+
+        if (overwrites.Count == 0)
+            return false;
+
+        foreach (var overwrite in overwrites)
+        {
+            var instructions = overwrite.CilMethodBody.Instructions;
+
+            if (instructions.Count <= 2)
+                continue;
+
+            switch (instructions[1].Operand)
+            {
+                case SerializedMethodDefinition m:
+                    return resolveImplicitConv(m);
+
+                default:
+                    if (convOpcodes.Contains(instructions[2].OpCode))
+                    {
+                        CilOpCode = instructions[2].OpCode;
+                        return true;
+                    }
+                    break;
+            }
+        }
+
+        return false;
+    }
+
+    private static readonly HashSet<CilOpCode> convOpcodes = new HashSet<CilOpCode>
+    {
+        CilOpCodes.Conv_I1, CilOpCodes.Conv_I2, CilOpCodes.Conv_I4, CilOpCodes.Conv_I8,
+        CilOpCodes.Conv_U1, CilOpCodes.Conv_U2, CilOpCodes.Conv_U4, CilOpCodes.Conv_U8,
+        CilOpCodes.Conv_R4, CilOpCodes.Conv_R8, CilOpCodes.Conv_I,  CilOpCodes.Conv_U,
+        CilOpCodes.Conv_Ovf_I1, CilOpCodes.Conv_Ovf_U1, CilOpCodes.Conv_Ovf_I2, CilOpCodes.Conv_Ovf_U2,
+        CilOpCodes.Conv_Ovf_I4, CilOpCodes.Conv_Ovf_U4, CilOpCodes.Conv_Ovf_I8, CilOpCodes.Conv_Ovf_U8,
+        CilOpCodes.Conv_Ovf_I,  CilOpCodes.Conv_Ovf_U
+    };
+
+    private bool resolveImplicitConv(SerializedMethodDefinition m)
+    {
+        var patternInOverrides = m.GetPatternInOverrides(new ConvVmTypePattern());
+
+        if (patternInOverrides.Count == 0)
+            return false;
+
+        int numberType = patternInOverrides[0].CilMethodBody.Instructions[3].GetLdcI4Constant();
+
+        var opCode = getConvOpCodeFromNumberType(numberType);
+
+        if (opCode.HasValue)
+        {
+            CilOpCode = opCode.Value;
+            return true;
+        }
+
+        return false;
+    }
+
+    private CilOpCode? getConvOpCodeFromNumberType(int numberType)
+    {
+        switch (numberType)
+        {
+            case 1:
+                return CilOpCodes.Conv_I1;
+            case 2:
+                return CilOpCodes.Conv_U1;
+            case 3:
+                return CilOpCodes.Conv_I2;
+            case 4:
+                return CilOpCodes.Conv_U2;
+            case 5:
+                return CilOpCodes.Conv_I4;
+            case 6:
+                return CilOpCodes.Conv_U4;
+            case 7:
+                return CilOpCodes.Conv_I8;
+            case 8:
+                return CilOpCodes.Conv_U8;
+            case 9:
+                return CilOpCodes.Conv_R4;
+            case 10:
+                return CilOpCodes.Conv_R8;
+            case 12:
+                return CilOpCodes.Conv_I;
+            case 13:
+                return CilOpCodes.Conv_U;
+        }
+
+        return null;
+    }
+}
+
+#endregion

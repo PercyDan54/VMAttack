@@ -105,6 +105,7 @@ public class CilMethodBodyGenerator : ContextBase
             {
                 var cilHandler = new CilExceptionHandler
                 {
+                    HandlerType = (CilExceptionHandlerType)(int)eh.EhType,
                     TryStart = cilMethodBody.Instructions[eh.TryStart].CreateLabel(),
                     TryEnd = cilMethodBody.Instructions[eh.TryEnd + 1].CreateLabel(),
                     HandlerStart = cilMethodBody.Instructions[eh.HandlerStart].CreateLabel(),
@@ -118,6 +119,9 @@ public class CilMethodBodyGenerator : ContextBase
                         break;
                     case EzirizEhType.Filter:
                         cilHandler.FilterStart = cilMethodBody.Instructions[eh.Filter].CreateLabel();
+                        break;
+                    case EzirizEhType.Fault:
+                        cilHandler.HandlerType = CilExceptionHandlerType.Fault;
                         break;
                 }
 

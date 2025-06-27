@@ -52,12 +52,6 @@ public class EzirizExceptionReader : EzirizReaderBase
                 // If the exception handling element is Filter, set the Filter property.
                 exception.Filter = ReadEncryptedByte();
                 break;
-            case EzirizEhType.Finally:
-                // If the exception handling element is Finally, do nothing.
-                break;
-            case EzirizEhType.Fault:
-                // If the exception handling element is Fault, do nothing.
-                break;
             default:
                 // If the exception handling element is unknown, read an encrypted byte and discard it.
                 ReadEncryptedByte();
